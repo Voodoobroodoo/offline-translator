@@ -1,72 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <Spinner
-        android:id="@+id/direction"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/directions" />
-
-    <EditText
-        android:id="@+id/source"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:gravity="top"
-        android:hint="@string/source_hint"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine|textCapSentences"
-        android:minLines="4" />
-
+    <!-- Шапка: логотип + название (как в Windows-версии) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
 
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:contentDescription="@string/app_name"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/app_name"
+            android:textColor="@color/text"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Направление: сегментный переключатель (как в Windows-версии) -->
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/directionGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
         <Button
+            android:id="@+id/btnAuto"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/dir_auto" />
+
+        <Button
+            android:id="@+id/btnEnRu"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/dir_en_ru" />
+
+        <Button
+            android:id="@+id/btnRuEn"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/dir_ru_en" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <!-- Исходный текст: карточка без подчёркиваний -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        app:cardBackgroundColor="@color/card"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/border"
+        app:strokeWidth="1dp">
+
+        <EditText
+            android:id="@+id/source"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:gravity="top"
+            android:hint="@string/source_hint"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine|textCapSentences"
+            android:minLines="5"
+            android:padding="14dp"
+            android:textColor="@color/text"
+            android:textColorHint="@color/status_fg"
+            android:textSize="16sp" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Кнопки -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/translateBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1.4"
             android:text="@string/translate" />
 
-        <Button
-            android:id="@+id/copyBtn"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/swapBtn"
+            style="?attr/materialButtonTonalStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="0.6"
+            android:text="@string/swap" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/copyBtn"
+            style="?attr/materialButtonTonalStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/copy" />
-
-        <Button
-            android:id="@+id/modelsBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/download_models" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/hint_models"
+        android:textColor="@color/status_fg"
         android:textSize="13sp" />
 
-    <TextView
-        android:id="@+id/output"
+    <!-- Перевод: карточка в тон исходной -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:background="#F4F6F8"
-        android:minLines="4"
-        android:padding="12dp"
-        android:textIsSelectable="true"
-        android:textSize="17sp" />
+        android:layout_marginTop="14dp"
+        app:cardBackgroundColor="@color/card"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/border"
+        app:strokeWidth="1dp">
+
+        <TextView
+            android:id="@+id/output"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="4"
+            android:padding="14dp"
+            android:textColor="@color/text"
+            android:textIsSelectable="true"
+            android:textSize="17sp" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/modelsBtn"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="10dp"
+        android:text="@string/download_models" />
 </LinearLayout>

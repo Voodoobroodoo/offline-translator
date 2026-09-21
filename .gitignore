@@ -15,3 +15,4 @@ selftest_result.txt
 
 # Собранный бинарник в корне (для релиза собирается через build_exe.bat)
 Переводчик.exe
+keystore/  
