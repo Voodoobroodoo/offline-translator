@@ -1,0 +1,17 @@
+# Сборка и временные файлы
+build/
+dist/
+release/
+models_stage/
+portable_stage/
+tools/
+__pycache__/
+*.pyc
+*.spec
+
+# Локальные настройки и результаты проверок
+settings.ini
+selftest_result.txt
+
+# Собранный бинарник в корне (для релиза собирается через build_exe.bat)
+Переводчик.exe

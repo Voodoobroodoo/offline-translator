@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Офлайн-переводчик</string>
+    <string name="translate">Перевести</string>
+    <string name="copy">Копировать</string>
+    <string name="download_models">Модели</string>
+    <string name="source_hint">Введите текст (EN / RU)</string>
+    <string name="empty_input">Введите текст для перевода.</string>
+    <string name="translating">Перевод…</string>
+    <string name="done">Готово • офлайн</string>
+    <string name="copied">Перевод скопирован</string>
+    <string name="downloading_models">Скачиваю модели перевода (один раз, нужен интернет)…</string>
+    <string name="models_ready">Модели готовы • дальше работает офлайн</string>
+    <string name="download_failed">Не удалось скачать модели: %1$s</string>
+    <string name="error">Ошибка: %1$s</string>
+    <string name="hint_models">Если перевод не работает — нажмите «Модели» при включённом интернете (один раз).</string>
+
+    <string-array name="directions">
+        <item>Английский → Русский</item>
+        <item>Русский → Английский</item>
+    </string-array>
+</resources>
