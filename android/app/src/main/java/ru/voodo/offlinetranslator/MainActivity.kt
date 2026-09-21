@@ -10,6 +10,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.TranslateRemoteModel
@@ -61,9 +62,10 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         status.text = getString(R.string.downloading_models)
                         var left = missing.size
+                        val conditions = DownloadConditions.Builder().build()
                         for (lang in missing) {
                             val model = TranslateRemoteModel.Builder(lang).build()
-                            manager.download(model)
+                            manager.download(model, conditions)
                                 .addOnSuccessListener {
                                     left -= 1
                                     if (left == 0) {
