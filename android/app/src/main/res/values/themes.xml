@@ -10,4 +10,22 @@
         <item name="android:statusBarColor">@color/bg</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+
+    <!-- Таблетка для кнопок (design.md: радиус 999) -->
+    <style name="ShapePill" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Поле r11 -->
+    <style name="ShapeField" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">11dp</item>
+    </style>
+
+    <!-- Карточка r14 -->
+    <style name="ShapeCard" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">14dp</item>
+    </style>
 </resources>

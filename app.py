@@ -114,6 +114,13 @@ THEMES = {
         "btn_fg_disabled": "#5b648f", "status_fg": "#9aa8e8", "border": "#2c3768",
         "font_family": "Segoe UI", "font_size": 13, "radius": 16, "wallpaper": "stars",
     },
+    "Янтарь": {
+        "bg": "#000000", "text_bg": "#1c1c1e", "dst_bg": "#161618", "text_fg": "#ffffff",
+        "caret": "#f2a03c", "accent": "#f2a03c", "accent_fg": "#000000",
+        "btn_bg": "#2c2c2e", "btn_fg": "#ffffff", "btn_active": "#3a3a3c",
+        "btn_fg_disabled": "#8e8e93", "status_fg": "#8e8e93", "border": "#2c2c2e",
+        "font_family": "Segoe UI", "font_size": 13, "radius": 14, "wallpaper": None,
+    },
     "Закат": {
         "bg": "#1b1b3a", "text_bg": "#241f3d", "dst_bg": "#201b36", "text_fg": "#ffe9d6",
         "caret": "#ffe9d6", "accent": "#ff7e5f", "accent_fg": "#2b1330",
@@ -128,7 +135,7 @@ THEMES[CUSTOM_THEME_NAME] = dict(THEMES["Светлая"])
 DEFAULT_THEME = "Светлая"
 THEME_SLUGS = {"Светлая": "light", "Тёмная": "dark", "Бумага": "paper", "Контраст": "contrast",
                "Океан": "ocean", "Неон": "neon", "Терминал": "terminal", "Ретро-95": "retro95",
-               "Космос": "space", "Закат": "sunset", CUSTOM_THEME_NAME: "custom"}
+               "Космос": "space", "Закат": "sunset", "Янтарь": "amber", CUSTOM_THEME_NAME: "custom"}
 FONT_FAMILIES = ["Segoe UI", "Georgia", "Verdana", "Calibri", "Consolas", "Arial", "Tahoma"]
 
 # ---------------- Глобальные горячие клавиши (Win32) ----------------

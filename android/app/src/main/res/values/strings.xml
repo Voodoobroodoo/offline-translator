@@ -9,8 +9,13 @@
     <string name="dir_auto">Авто</string>
     <string name="dir_en_ru">EN → RU</string>
     <string name="dir_ru_en">RU → EN</string>
+    <string name="overline_direction">Направление</string>
+    <string name="overline_result">Перевод</string>
     <string name="empty_input">Введите текст для перевода.</string>
     <string name="translating">Перевод…</string>
+    <string name="working">Перевод…</string>
+    <string name="done_short">Готово ✓</string>
+    <string name="fail_short">Ошибка</string>
     <string name="done">Готово • офлайн</string>
     <string name="copied">Перевод скопирован</string>
     <string name="swapped">Тексты обменяны</string>

@@ -5,7 +5,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.os.Handler
+import android.os.Looper
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -24,6 +25,7 @@ import com.google.mlkit.nl.translate.TranslatorOptions
 class MainActivity : AppCompatActivity() {
 
     private var translator: Translator? = null
+    private val handler = Handler(Looper.getMainLooper())
 
     private lateinit var directionGroup: MaterialButtonToggleGroup
     private lateinit var source: EditText
@@ -123,15 +125,37 @@ class MainActivity : AppCompatActivity() {
                 .build()
             translator = Translation.getClient(options)
             status.text = getString(R.string.translating)
+            status.setTextColor(getColor(R.color.text2))
+            val btn = findViewById<Button>(R.id.translateBtn)
+            btn.text = getString(R.string.working)
             translator!!.translate(text)
                 .addOnSuccessListener { translated ->
                     output.text = translated
                     status.text = getString(R.string.done) + " • $label"
+                    status.setTextColor(getColor(R.color.green))
+                    showVerdict(btn, getString(R.string.done_short), R.color.green)
                 }
                 .addOnFailureListener {
                     status.text = getString(R.string.error, it.message)
+                    status.setTextColor(getColor(R.color.red))
+                    showVerdict(btn, getString(R.string.fail_short), R.color.red)
                 }
         }
+    }
+
+    /** Кнопка со своим ходом: вердикт на самой кнопке, возврат через 1,5 с. */
+    private fun showVerdict(btn: Button, label: String, colorRes: Int) {
+        val accent = getColor(R.color.accent)
+        val onAccent = getColor(R.color.on_accent)
+        btn.text = label
+        btn.setBackgroundColor(getColor(colorRes))
+        btn.setTextColor(getColor(R.color.on_accent))
+        handler.postDelayed({
+            btn.text = getString(R.string.translate)
+            btn.setBackgroundColor(accent)
+            btn.setTextColor(onAccent)
+            status.setTextColor(getColor(R.color.text2))
+        }, 1500)
     }
 
     /** Модели скачиваются один раз (нужен интернет), дальше перевод идёт офлайн. */

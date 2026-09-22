@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:background="@color/bg"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp">
 
-    <!-- Шапка: логотип + название (как в Windows-версии) -->
+    <!-- Шапка: логотип + название 28sp/700/-0.02em -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,27 +15,40 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:contentDescription="@string/app_name"
             android:src="@mipmap/ic_launcher" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="12dp"
+            android:letterSpacing="-0.02"
             android:text="@string/app_name"
             android:textColor="@color/text"
-            android:textSize="20sp"
+            android:textSize="26sp"
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Направление: сегментный переключатель (как в Windows-версии) -->
+    <!-- Надзаголовок-капс (12sp/600/+0.08em) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:letterSpacing="0.08"
+        android:text="@string/overline_direction"
+        android:textColor="@color/text2"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textAllCaps="true" />
+
+    <!-- Направление: сегмент-таблетки -->
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/directionGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         app:selectionRequired="true"
         app:singleSelection="true">
 
@@ -64,16 +77,15 @@
             android:text="@string/dir_ru_en" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
-    <!-- Исходный текст: карточка без подчёркиваний -->
+    <!-- Поле ввода: r11, без рамки, поверхность field -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        app:cardBackgroundColor="@color/card"
-        app:cardCornerRadius="16dp"
+        android:layout_marginTop="16dp"
+        app:cardBackgroundColor="@color/field"
+        app:cardCornerRadius="11dp"
         app:cardElevation="0dp"
-        app:strokeColor="@color/border"
-        app:strokeWidth="1dp">
+        app:strokeWidth="0dp">
 
         <EditText
             android:id="@+id/source"
@@ -87,11 +99,11 @@
             android:minLines="5"
             android:padding="14dp"
             android:textColor="@color/text"
-            android:textColorHint="@color/status_fg"
+            android:textColorHint="@color/text2"
             android:textSize="16sp" />
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Кнопки -->
+    <!-- Кнопки-таблетки: главная одна, остальное field -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -102,47 +114,67 @@
             android:id="@+id/translateBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="12dp"
             android:layout_weight="1.4"
-            android:text="@string/translate" />
+            android:backgroundTint="@color/accent"
+            android:text="@string/translate"
+            android:textColor="@color/on_accent"
+            app:shapeAppearanceOverlay="@style/ShapePill" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/swapBtn"
-            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="0.6"
-            android:text="@string/swap" />
+            android:layout_marginEnd="12dp"
+            android:layout_weight="0.55"
+            android:backgroundTint="@color/field"
+            android:text="@string/swap"
+            android:textColor="@color/text"
+            app:iconGravity="textStart"
+            app:shapeAppearanceOverlay="@style/ShapePill" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/copyBtn"
-            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/copy" />
+            android:layout_weight="1.05"
+            android:backgroundTint="@color/field"
+            android:text="@string/copy"
+            android:textColor="@color/text"
+            app:shapeAppearanceOverlay="@style/ShapePill" />
     </LinearLayout>
 
+    <!-- Статус: слово + цвет вердикта -->
     <TextView
         android:id="@+id/status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:text="@string/hint_models"
-        android:textColor="@color/status_fg"
+        android:textColor="@color/text2"
         android:textSize="13sp" />
 
-    <!-- Перевод: карточка в тон исходной -->
+    <!-- Надзаголовок результата -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:letterSpacing="0.08"
+        android:text="@string/overline_result"
+        android:textColor="@color/text2"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textAllCaps="true" />
+
+    <!-- Карточка перевода: r14 -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="8dp"
         app:cardBackgroundColor="@color/card"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="14dp"
         app:cardElevation="0dp"
-        app:strokeColor="@color/border"
-        app:strokeWidth="1dp">
+        app:strokeWidth="0dp">
 
         <TextView
             android:id="@+id/output"
@@ -157,10 +189,12 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/modelsBtn"
-        style="?attr/materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginTop="10dp"
-        android:text="@string/download_models" />
+        android:layout_marginTop="12dp"
+        android:backgroundTint="@color/field"
+        android:text="@string/download_models"
+        android:textColor="@color/text"
+        app:shapeAppearanceOverlay="@style/ShapePill" />
 </LinearLayout>
