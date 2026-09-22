@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Вердиктные подложки статусов: цвет вердикта на ~15% альфы (design.md) -->
+    <color name="green_bg">#2630D158</color>
+    <color name="red_bg">#26FF453A</color>
+</resources>

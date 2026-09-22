@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Интернет нужен ТОЛЬКО для первичной загрузки моделей перевода -->
+    <!-- Интернет нужен ТОЛЬКО для первичной загрузки моделей перевода и голоса -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Микрофон: только для офлайн-распознавания речи, звук не покидает устройство -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
