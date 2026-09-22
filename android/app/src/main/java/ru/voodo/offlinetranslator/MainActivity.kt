@@ -1,4 +1,4 @@
-package ru.voodo.offlinetranslator
+﻿package ru.voodo.offlinetranslator
 
 import android.Manifest
 import android.content.ClipData
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
 
         status.text = getString(R.string.hint_models)
 
-        // «Поделиться → Офлайн-переводчик» из других приложений
+        // В«РџРѕРґРµР»РёС‚СЊСЃСЏ в†’ РћС„Р»Р°Р№РЅ-РїРµСЂРµРІРѕРґС‡РёРєВ» РёР· РґСЂСѓРіРёС… РїСЂРёР»РѕР¶РµРЅРёР№
         val shared = intent?.takeIf { it.action == Intent.ACTION_SEND }?.getStringExtra(Intent.EXTRA_TEXT)
         if (!shared.isNullOrBlank()) {
             source.setText(shared)
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
             translateSmart(shared)
         }
 
-        // Скрытый самотест движка: am start --es wav_path /sdcard/test.wav --es wav_lang en
+        // РЎРєСЂС‹С‚С‹Р№ СЃР°РјРѕС‚РµСЃС‚ РґРІРёР¶РєР°: am start --es wav_path /sdcard/test.wav --es wav_lang en
         intent?.getStringExtra("wav_path")?.let { path ->
             val lang = intent.getStringExtra("wav_lang") ?: "en"
             status.text = getString(R.string.voice_model_loading)
@@ -147,10 +147,10 @@ class MainActivity : AppCompatActivity() {
         refreshChips()
     }
 
-    // ---------------- Готовность компонентов ----------------
+    // ---------------- Р“РѕС‚РѕРІРЅРѕСЃС‚СЊ РєРѕРјРїРѕРЅРµРЅС‚РѕРІ ----------------
 
     private fun refreshChips() {
-        // Текстовые модели (ML Kit)
+        // РўРµРєСЃС‚РѕРІС‹Рµ РјРѕРґРµР»Рё (ML Kit)
         RemoteModelManager.getInstance()
             .getDownloadedModels(TranslateRemoteModel::class.java)
             .addOnSuccessListener { downloaded ->
@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
 
-        // Голосовые модели (Vosk)
+        // Р“РѕР»РѕСЃРѕРІС‹Рµ РјРѕРґРµР»Рё (Vosk)
         setChip(
             chipVoiceRu,
             VoiceRepo.isDownloaded(this, "ru"),
@@ -247,7 +247,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    /** Самотест движка: распознавание из WAV-файла (16 кГц, 16 бит, моно). */
+    /** РЎР°РјРѕС‚РµСЃС‚ РґРІРёР¶РєР°: СЂР°СЃРїРѕР·РЅР°РІР°РЅРёРµ РёР· WAV-С„Р°Р№Р»Р° (16 РєР“С†, 16 Р±РёС‚, РјРѕРЅРѕ). */
     private fun recognizeWavFile(path: String, lang: String) {
         Thread {
             try {
@@ -274,7 +274,7 @@ class MainActivity : AppCompatActivity() {
                     if (text.isNotBlank()) {
                         translateSmart(text)
                     } else {
-                        status.text = "WAV: пустой результат"
+                        status.text = "WAV: РїСѓСЃС‚РѕР№ СЂРµР·СѓР»СЊС‚Р°С‚"
                     }
                 }
             } catch (e: Exception) {
@@ -291,7 +291,7 @@ class MainActivity : AppCompatActivity() {
         downloadTextModels(onReady)
     }
 
-    // ---------------- Микрофон и Vosk ----------------
+    // ---------------- РњРёРєСЂРѕС„РѕРЅ Рё Vosk ----------------
 
     private fun startMicFlow() {
         val lang = when (directionGroup.checkedButtonId) {
@@ -342,7 +342,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             startListening(micLangAfterPermission!!)
         } else if (requestCode == 1001) {
-            status.text = getString(R.string.error, "нет разрешения на микрофон")
+            status.text = getString(R.string.error, "РЅРµС‚ СЂР°Р·СЂРµС€РµРЅРёСЏ РЅР° РјРёРєСЂРѕС„РѕРЅ")
         }
         micLangAfterPermission = null
     }
@@ -354,37 +354,33 @@ class MainActivity : AppCompatActivity() {
             return
         }
         status.text = getString(R.string.voice_model_loading)
-        // Сессия диктовки: накопленный текст стартует с того, что уже в поле
+        // РЎРµСЃСЃРёСЏ РґРёРєС‚РѕРІРєРё: РЅР°РєРѕРїР»РµРЅРЅС‹Р№ С‚РµРєСЃС‚ СЃС‚Р°СЂС‚СѓРµС‚ СЃ С‚РѕРіРѕ, С‡С‚Рѕ СѓР¶Рµ РІ РїРѕР»Рµ
         transcript.setLength(0)
         transcript.append(source.text.toString())
         Thread {
             try {
-                voskModel = Model(VoiceRepo.modelDir(this, lang).absolutePath)
-                val recognizer = Recognizer(voskModel, 16000.0f)
+                val model = VoiceRepo.getModel(this, lang)
+                val recognizer = Recognizer(model, 16000.0f)
                 speechService = SpeechService(recognizer, 16000.0f)
                 speechService?.startListening(object : org.vosk.android.RecognitionListener {
                     override fun onPartialResult(hypothesis: String?) {
                         val partial = JSONObject(hypothesis ?: "{}").optString("partial", "")
                         if (partial.isNotBlank()) {
-                            runOnUiThread {
-                                // Показываем накопленный текст + текущий фрагмент
-                                val base = transcript.toString()
-                                source.setText(if (base.isEmpty()) partial else "$base $partial")
-                            }
+                            runOnUiThread { source.setText(displayWithPartial(partial)) }
                         }
                     }
 
                     override fun onResult(hypothesis: String?) {
-                        // финальный ответ приходит и через onFinalResult
+                        // С„РёРЅР°Р»СЊРЅС‹Р№ РѕС‚РІРµС‚ РїСЂРёС…РѕРґРёС‚ Рё С‡РµСЂРµР· onFinalResult
                     }
 
                     override fun onFinalResult(hypothesis: String?) {
                         val utterance = JSONObject(hypothesis ?: "{}").optString("text", "")
                         runOnUiThread {
-                            // Пауза = конец фразы: ДОБАВЛЯЕМ её к диктовке и продолжаем слушать
+                            // РџР°СѓР·Р° = РєРѕРЅРµС† С„СЂР°Р·С‹: СЃР»РёРІР°РµРј СЃ РЅР°РєРѕРїР»РµРЅРЅС‹Рј Рё РїСЂРѕРґРѕР»Р¶Р°РµРј СЃР»СѓС€Р°С‚СЊ
                             if (utterance.isNotBlank()) {
-                                if (transcript.isNotEmpty()) transcript.append(" ")
-                                transcript.append(utterance)
+                                transcript.setLength(0)
+                                transcript.append(mergeTranscript(utterance))
                                 source.setText(transcript.toString())
                             }
                         }
@@ -425,28 +421,54 @@ class MainActivity : AppCompatActivity() {
         status.setTextColor(ContextCompat.getColor(this, R.color.text2))
     }
 
-    // ---------------- Перевод ----------------
+    /** РЎР»РёСЏРЅРёРµ: РµСЃР»Рё Vosk РїСЂРёСЃР»Р°Р» С‚РµРєСЃС‚ С†РµР»РёРєРѕРј (СЃ РєРѕРЅС‚РµРєСЃС‚РѕРј) вЂ” Р·Р°РјРµРЅСЏРµРј, РёРЅР°С‡Рµ РґРѕРїРёСЃС‹РІР°РµРј. */
+    private fun mergeTranscript(incoming: String): String {
+        val base = transcript.toString().trim()
+        val inc = incoming.trim()
+        return when {
+            inc.isEmpty() -> base
+            base.isEmpty() -> inc
+            inc.startsWith(base) -> inc
+            inc.contains(base) -> inc
+            else -> "$base $inc"
+        }
+    }
 
-    /** Автоопределение языка, если выбран сегмент «Авто». */
+    /** РћС‚РѕР±СЂР°Р¶РµРЅРёРµ С‡Р°СЃС‚РёС‡РЅРѕРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚Р° РїРѕРІРµСЂС… РЅР°РєРѕРїР»РµРЅРЅРѕРіРѕ. */
+    private fun displayWithPartial(partial: String): String {
+        val base = transcript.toString().trim()
+        val p = partial.trim()
+        return when {
+            p.isEmpty() -> base
+            base.isEmpty() -> p
+            p.startsWith(base) -> p
+            p.contains(base) -> p
+            else -> "$base $p"
+        }
+    }
+
+    // ---------------- РџРµСЂРµРІРѕРґ ----------------
+
+    /** РђРІС‚РѕРѕРїСЂРµРґРµР»РµРЅРёРµ СЏР·С‹РєР°, РµСЃР»Рё РІС‹Р±СЂР°РЅ СЃРµРіРјРµРЅС‚ В«РђРІС‚РѕВ». */
     private fun translateSmart(text: String) {
         if (directionGroup.checkedButtonId == R.id.btnAuto) {
             status.text = getString(R.string.translating)
             LanguageIdentification.getClient().identifyLanguage(text)
                 .addOnSuccessListener { code ->
                     if (code == "ru") {
-                        startTranslation(text, TranslateLanguage.RUSSIAN, TranslateLanguage.ENGLISH, "RU → EN")
+                        startTranslation(text, TranslateLanguage.RUSSIAN, TranslateLanguage.ENGLISH, "RU в†’ EN")
                     } else {
-                        val note = if (code == "und") " (язык не определён)" else ""
-                        startTranslation(text, TranslateLanguage.ENGLISH, TranslateLanguage.RUSSIAN, "EN → RU$note")
+                        val note = if (code == "und") " (СЏР·С‹Рє РЅРµ РѕРїСЂРµРґРµР»С‘РЅ)" else ""
+                        startTranslation(text, TranslateLanguage.ENGLISH, TranslateLanguage.RUSSIAN, "EN в†’ RU$note")
                     }
                 }
                 .addOnFailureListener {
-                    startTranslation(text, TranslateLanguage.ENGLISH, TranslateLanguage.RUSSIAN, "EN → RU")
+                    startTranslation(text, TranslateLanguage.ENGLISH, TranslateLanguage.RUSSIAN, "EN в†’ RU")
                 }
         } else if (directionGroup.checkedButtonId == R.id.btnRuEn) {
-            startTranslation(text, TranslateLanguage.RUSSIAN, TranslateLanguage.ENGLISH, "RU → EN")
+            startTranslation(text, TranslateLanguage.RUSSIAN, TranslateLanguage.ENGLISH, "RU в†’ EN")
         } else {
-            startTranslation(text, TranslateLanguage.ENGLISH, TranslateLanguage.RUSSIAN, "EN → RU")
+            startTranslation(text, TranslateLanguage.ENGLISH, TranslateLanguage.RUSSIAN, "EN в†’ RU")
         }
     }
 
@@ -465,7 +487,7 @@ class MainActivity : AppCompatActivity() {
             translator!!.translate(text)
                 .addOnSuccessListener { translated ->
                     output.text = translated
-                    status.text = getString(R.string.done) + " • $label"
+                    status.text = getString(R.string.done) + " вЂў $label"
                     status.setTextColor(ContextCompat.getColor(this, R.color.green))
                     showVerdict(btn, getString(R.string.done_short), R.color.green)
                 }
@@ -477,7 +499,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Кнопка со своим ходом: вердикт на самой кнопке, возврат через 1,5 с. */
+    /** РљРЅРѕРїРєР° СЃРѕ СЃРІРѕРёРј С…РѕРґРѕРј: РІРµСЂРґРёРєС‚ РЅР° СЃР°РјРѕР№ РєРЅРѕРїРєРµ, РІРѕР·РІСЂР°С‚ С‡РµСЂРµР· 1,5 СЃ. */
     private fun showVerdict(btn: Button, label: String, colorRes: Int) {
         val accent = getColor(R.color.accent)
         val onAccent = getColor(R.color.on_accent)
@@ -492,7 +514,7 @@ class MainActivity : AppCompatActivity() {
         }, 1500)
     }
 
-    /** Модели скачиваются один раз (нужен интернет), дальше перевод идёт офлайн. */
+    /** РњРѕРґРµР»Рё СЃРєР°С‡РёРІР°СЋС‚СЃСЏ РѕРґРёРЅ СЂР°Р· (РЅСѓР¶РµРЅ РёРЅС‚РµСЂРЅРµС‚), РґР°Р»СЊС€Рµ РїРµСЂРµРІРѕРґ РёРґС‘С‚ РѕС„Р»Р°Р№РЅ. */
     private fun ensureModels(src: String, dst: String, onReady: () -> Unit) {
         val manager = RemoteModelManager.getInstance()
         manager.getDownloadedModels(TranslateRemoteModel::class.java)
@@ -534,3 +556,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+

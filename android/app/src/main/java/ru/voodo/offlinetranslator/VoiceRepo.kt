@@ -3,6 +3,7 @@ package ru.voodo.offlinetranslator
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import org.vosk.Model
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -15,6 +16,18 @@ import java.util.zip.ZipInputStream
 object VoiceRepo {
 
     private val main = Handler(Looper.getMainLooper())
+
+    // Кэш загруженной модели: инициализация тяжёлая, не пересоздаём на каждое нажатие
+    @Volatile private var cachedModel: Model? = null
+    @Volatile private var cachedLang: String? = null
+
+    fun getModel(context: Context, lang: String): Model {
+        if (cachedModel != null && cachedLang == lang) return cachedModel!!
+        cachedModel?.close()
+        cachedModel = Model(modelDir(context, lang).absolutePath)
+        cachedLang = lang
+        return cachedModel!!
+    }
 
     private const val RU_URL = "https://alphacephei.com/vosk/models/vosk-model-small-ru-0.22.zip"
     private const val EN_URL = "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
