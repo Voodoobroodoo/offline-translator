@@ -20,6 +20,7 @@
     <string name="chip_voice_en_ready">Голос EN ✓</string>
     <string name="chip_voice_en_missing">Голос EN — скачать</string>
     <string name="listening">Слушаю… говорите</string>
+    <string name="stopped_hint">Запись остановлена • жми «Перевести»</string>
     <string name="downloading_voice">Скачиваю голосовую модель (~45 МБ, один раз)…</string>
     <string name="voice_ready">Голосовая модель готова</string>
     <string name="downloading_text">Скачиваю модели перевода…</string>

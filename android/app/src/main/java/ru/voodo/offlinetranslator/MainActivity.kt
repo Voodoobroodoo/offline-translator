@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     private var speechService: SpeechService? = null
     private var listening = false
     private var micLangAfterPermission: String? = null
+    private val transcript = StringBuilder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,13 +84,15 @@ class MainActivity : AppCompatActivity() {
         micBtn.setOnClickListener {
             if (listening) {
                 stopListening()
-                status.text = getString(R.string.hint_models)
+                status.text = getString(R.string.stopped_hint)
+                status.setTextColor(ContextCompat.getColor(this, R.color.text2))
             } else {
                 startMicFlow()
             }
         }
 
         translateBtn.setOnClickListener {
+            if (listening) stopListening()
             val text = source.text.toString().trim()
             if (text.isEmpty()) {
                 status.text = getString(R.string.empty_input)
@@ -129,6 +132,13 @@ class MainActivity : AppCompatActivity() {
             source.setText(shared)
             status.text = getString(R.string.shared_hint)
             translateSmart(shared)
+        }
+
+        // Скрытый самотест движка: am start --es wav_path /sdcard/test.wav --es wav_lang en
+        intent?.getStringExtra("wav_path")?.let { path ->
+            val lang = intent.getStringExtra("wav_lang") ?: "en"
+            status.text = getString(R.string.voice_model_loading)
+            ensureVoiceModel(lang) { recognizeWavFile(path, lang) }
         }
     }
 
@@ -225,6 +235,57 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun ensureVoiceModel(lang: String, onReady: () -> Unit) {
+        if (VoiceRepo.isDownloaded(this, lang)) {
+            onReady()
+            return
+        }
+        status.text = getString(R.string.downloading_voice)
+        VoiceRepo.download(this, lang, { refreshChips(); onReady() }, { err ->
+            status.text = getString(R.string.error, err)
+            status.setTextColor(ContextCompat.getColor(this, R.color.red))
+        })
+    }
+
+    /** Самотест движка: распознавание из WAV-файла (16 кГц, 16 бит, моно). */
+    private fun recognizeWavFile(path: String, lang: String) {
+        Thread {
+            try {
+                val model = Model(VoiceRepo.modelDir(this, lang).absolutePath)
+                val recognizer = Recognizer(model, 16000.0f)
+                val raw = java.io.File(path).readBytes()
+                val shorts = ShortArray((raw.size - 44) / 2)
+                for (i in shorts.indices) {
+                    val lo = raw[44 + i * 2].toInt() and 0xFF
+                    val hi = raw[45 + i * 2].toInt()
+                    shorts[i] = ((hi << 8) or lo).toShort()
+                }
+                var i = 0
+                while (i + 4096 <= shorts.size) {
+                    recognizer.acceptWaveForm(shorts.copyOfRange(i, i + 4096), 4096)
+                    i += 4096
+                }
+                if (i < shorts.size) {
+                    recognizer.acceptWaveForm(shorts.copyOfRange(i, shorts.size), shorts.size - i)
+                }
+                val text = JSONObject(recognizer.result).optString("text", "")
+                runOnUiThread {
+                    source.setText(text)
+                    if (text.isNotBlank()) {
+                        translateSmart(text)
+                    } else {
+                        status.text = "WAV: пустой результат"
+                    }
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    status.text = getString(R.string.error, e.message)
+                    status.setTextColor(ContextCompat.getColor(this, R.color.red))
+                }
+            }
+        }.start()
+    }
+
     private fun downloadModels(onReady: () -> Unit) {
         status.text = getString(R.string.downloading_text)
         downloadTextModels(onReady)
@@ -293,6 +354,9 @@ class MainActivity : AppCompatActivity() {
             return
         }
         status.text = getString(R.string.voice_model_loading)
+        // Сессия диктовки: накопленный текст стартует с того, что уже в поле
+        transcript.setLength(0)
+        transcript.append(source.text.toString())
         Thread {
             try {
                 voskModel = Model(VoiceRepo.modelDir(this, lang).absolutePath)
@@ -300,9 +364,13 @@ class MainActivity : AppCompatActivity() {
                 speechService = SpeechService(recognizer, 16000.0f)
                 speechService?.startListening(object : org.vosk.android.RecognitionListener {
                     override fun onPartialResult(hypothesis: String?) {
-                        val text = JSONObject(hypothesis ?: "{}").optString("partial", "")
-                        if (text.isNotBlank()) {
-                            runOnUiThread { source.setText(text) }
+                        val partial = JSONObject(hypothesis ?: "{}").optString("partial", "")
+                        if (partial.isNotBlank()) {
+                            runOnUiThread {
+                                // Показываем накопленный текст + текущий фрагмент
+                                val base = transcript.toString()
+                                source.setText(if (base.isEmpty()) partial else "$base $partial")
+                            }
                         }
                     }
 
@@ -311,12 +379,13 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     override fun onFinalResult(hypothesis: String?) {
-                        val text = JSONObject(hypothesis ?: "{}").optString("text", "")
-                        if (text.isNotBlank()) {
-                            runOnUiThread {
-                                source.setText(text)
-                                stopListening()
-                                translateSmart(text)
+                        val utterance = JSONObject(hypothesis ?: "{}").optString("text", "")
+                        runOnUiThread {
+                            // Пауза = конец фразы: ДОБАВЛЯЕМ её к диктовке и продолжаем слушать
+                            if (utterance.isNotBlank()) {
+                                if (transcript.isNotEmpty()) transcript.append(" ")
+                                transcript.append(utterance)
+                                source.setText(transcript.toString())
                             }
                         }
                     }
@@ -353,6 +422,7 @@ class MainActivity : AppCompatActivity() {
         } catch (_: Exception) {
         }
         micBtn.alpha = 1.0f
+        status.setTextColor(ContextCompat.getColor(this, R.color.text2))
     }
 
     // ---------------- Перевод ----------------
