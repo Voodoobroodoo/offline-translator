@@ -1,6 +1,8 @@
 package ru.voodo.offlinetranslator
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -11,6 +13,8 @@ import java.util.zip.ZipInputStream
 
 /** Голосовые модели Vosk: состояние, скачивание, распаковка. Офлайн после загрузки. */
 object VoiceRepo {
+
+    private val main = Handler(Looper.getMainLooper())
 
     private const val RU_URL = "https://alphacephei.com/vosk/models/vosk-model-small-ru-0.22.zip"
     private const val EN_URL = "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
@@ -38,10 +42,13 @@ object VoiceRepo {
                 }
                 unzip(zip, context.filesDir)
                 zip.delete()
-                if (isDownloaded(context, lang)) onDone()
-                else onFail("файлы модели не найдены после распаковки")
+                // колбэки — строго в главный поток (UI трогают только там)
+                main.post {
+                    if (isDownloaded(context, lang)) onDone()
+                    else onFail("файлы модели не найдены после распаковки")
+                }
             } catch (e: Exception) {
-                onFail(e.message ?: e.javaClass.simpleName)
+                main.post { onFail(e.message ?: e.javaClass.simpleName) }
             }
         }.start()
     }
