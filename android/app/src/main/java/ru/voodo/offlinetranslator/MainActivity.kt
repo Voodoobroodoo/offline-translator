@@ -258,7 +258,7 @@ class MainActivity : AppCompatActivity() {
                 for (i in shorts.indices) {
                     val lo = raw[44 + i * 2].toInt() and 0xFF
                     val hi = raw[45 + i * 2].toInt()
-                    shorts[i] = ((hi << 8) or lo).toShort()
+                    shorts[i] = ((hi shl 8) or lo).toShort()
                 }
                 var i = 0
                 while (i + 4096 <= shorts.size) {
