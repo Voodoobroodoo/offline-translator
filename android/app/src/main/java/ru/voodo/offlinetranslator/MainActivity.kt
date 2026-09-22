@@ -305,6 +305,10 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
+                    override fun onResult(hypothesis: String?) {
+                        // финальный ответ приходит и через onFinalResult
+                    }
+
                     override fun onFinalResult(hypothesis: String?) {
                         val text = JSONObject(hypothesis ?: "{}").optString("text", "")
                         if (text.isNotBlank()) {
@@ -447,11 +451,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-    }
-
-    private fun downloadModels(onReady: () -> Unit) {
-        status.text = getString(R.string.downloading_text)
-        downloadTextModels(onReady)
     }
 
     override fun onDestroy() {
